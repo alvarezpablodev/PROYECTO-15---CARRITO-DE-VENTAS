@@ -13,6 +13,8 @@ let articulosCarrito = [];
 //cargarEventos
 
 listaCursos.addEventListener('click',agregarCurso);
+vaciarCarritoBtn.addEventListener('click',vaciarCarrito);
+carrito.addEventListener('click',eliminarCurso);
 
 
 //Funciones
@@ -28,6 +30,8 @@ function agregarCurso(e) {
 
 //leer los datos del curso
 function leerDatosCurso(curso) {
+
+     limpiarHTML();
     const infoCurso = {
          imagen: curso.querySelector('img').src,
          titulo: curso.querySelector('h4').textContent,
@@ -35,17 +39,42 @@ function leerDatosCurso(curso) {
          id: curso.querySelector('a').getAttribute('data-id'), 
          cantidad: 1
     }
-    articulosCarrito = [...articulosCarrito,infoCurso];
+
+    const existe = articulosCarrito.some( curso => curso.id === infoCurso.id)
+    if (existe) {
+     const cursos = articulosCarrito.map(curso => {
+          if (curso.id === infoCurso.id) {
+               curso.cantidad++;
+               return curso;
+          }else{
+               return curso;
+          }
+     });
+
+     articulosCarrito = [...cursos];
+    
+     
+     }else{
+          articulosCarrito = [...articulosCarrito,infoCurso];
+     }
     console.log(articulosCarrito);
 
     carritoHTML();
 }
 
+function eliminarCurso(e){
+     const cursoID = e.target.getAttribute('data-id');
+     articulosCarrito = articulosCarrito.filter(curso => curso.id !== cursoID);
 
+     carritoHTML();
+
+     
+
+}
 
 function carritoHTML() {
 
-     vaciarCarrito();
+    limpiarHTML();
 
      articulosCarrito.forEach(curso => {
           const row = document.createElement('tr');
@@ -61,13 +90,16 @@ function carritoHTML() {
           `;
           contenedorCarrito.appendChild(row);
      });
+     
+}
 
+function vaciarCarrito(){
+     articulosCarrito = [];
+     limpiarHTML();
 }
 
 
-
-
-function vaciarCarrito(){
+function limpiarHTML(){
     
     while(contenedorCarrito.firstChild) {
           contenedorCarrito.removeChild(contenedorCarrito.firstChild);
